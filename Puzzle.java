@@ -14,6 +14,7 @@ public class Puzzle
     private HashMap<ArrayList<Integer>,Checkbox> celdas;
     private HashMap<Tile,ArrayList<Tile>> connections;
     private HashMap<ArrayList<Integer>,Tile> tiles;
+    private char[][] ending;
     private int height;
     private int width;
     /**
@@ -25,6 +26,7 @@ public class Puzzle
         tiles = new HashMap<>();
         height = h;
         width = w;
+        this.ending = new char[height][width];
         for (int i = 0 ;i<h; i++){
             ArrayList<Checkbox> celds = new ArrayList<>();
             for (int j = 0 ; j<w; j++){
@@ -35,8 +37,57 @@ public class Puzzle
                 celdas.put(position, celd);
                 celd.moveTo(celd.getBorder().getXPosition()+(celd.getBorder().getWidth()*j)-5,celd.getBorder().getYPosition()+(celd.getBorder().getWidth()*i)-5);
                 celds.add(celd);
+                ending[i][j] = '.';
             }
             tablero.add(celds);
+        }
+    }
+    
+    public Puzzle(char[][] ending){
+        tablero = new ArrayList<>();
+        celdas = new HashMap<>();
+        tiles = new HashMap<>();
+        height = ending.length;
+        width = ending[0].length;
+        this.ending = ending;
+        for (int i = 0 ;i<height; i++){
+            ArrayList<Checkbox> celds = new ArrayList<>();
+            for (int j = 0 ; j<width; j++){
+                Checkbox celd = new Checkbox(i,j);
+                ArrayList<Integer> position = new ArrayList<>();
+                position.add(i); 
+                position.add(j);
+                celdas.put(position, celd);
+                celd.moveTo(celd.getBorder().getXPosition()+(celd.getBorder().getWidth()*j)-5,celd.getBorder().getYPosition()+(celd.getBorder().getWidth()*i)-5);
+                celds.add(celd);
+            }
+            tablero.add(celds);
+        }
+    }
+    
+    public Puzzle(char[][]starting,char[][] ending){
+        tablero = new ArrayList<>();
+        celdas = new HashMap<>();
+        tiles = new HashMap<>();
+        height = starting.length;
+        width = starting[0].length;
+        this.ending = ending;
+        for (int i = 0; i < starting.length; i++) {  
+            ArrayList<Checkbox> celds = new ArrayList<>();
+            for (int j = 0; j < starting[i].length; j++) {  
+                Checkbox celd = new Checkbox(i,j);
+                ArrayList<Integer> position = new ArrayList<>();
+                position.add(i); 
+                position.add(j);
+                celdas.put(position, celd);
+                celd.moveTo(celd.getBorder().getXPosition()+(celd.getBorder().getWidth()*j)-5,celd.getBorder().getYPosition()+(celd.getBorder().getWidth()*i)-5);
+                celds.add(celd);
+                if (starting[i][j] != '.'){
+                    String color = ColorMap.getColor(starting[i][j]);
+                    addTile(i,j,color);
+                }
+            }
+            System.out.println();  
         }
     }
     
@@ -87,7 +138,7 @@ public class Puzzle
             JOptionPane.showMessageDialog(null, "Error: No hay ninguna baldosa");
         }else{
             tiles.get(position).setIsSticky(true);
-            createConeccions(position);
+            //createConeccions(position);
             //continuar
         }
     }
@@ -100,11 +151,38 @@ public class Puzzle
             JOptionPane.showMessageDialog(null, "Error: No hay ninguna baldosa");
         }else{
             tiles.get(position).setIsSticky(false);
-            deleteConeccions(position);
+            //deleteConeccions(position);
             //continuar
         }
     }
     
+    public boolean isGoal() {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (actualArraygement()[i][j] != ending[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    public char[][] actualArraygement(){
+        char [][] actualArray = new char[height][width];
+        for (ArrayList<Checkbox> fila : tablero) {
+            for (Checkbox celd : fila) {
+                if (celd.getIsOccuped()){
+                    ArrayList<Integer> position = new ArrayList<>();
+                    position.add(celd.getXPosition()); 
+                    position.add(celd.getYPosition());
+                    actualArray[celd.getXPosition()][celd.getYPosition()] = tiles.get(position).getColor().charAt(0);
+                }else{
+                    actualArray[celd.getXPosition()][celd.getYPosition()] = '.';
+                }
+            }
+        }
+        return actualArray;
+    }
     
     public void makeVisible(){
         for (ArrayList<Checkbox> fila : tablero) {
@@ -122,4 +200,32 @@ public class Puzzle
         }
     }
     
+    private class ColorMap{
+        private static HashMap<Character, String> colorMap;
+        static {
+            HashMap<Character, String> colorMap = new HashMap<>();
+            colorMap.put('b', "blue");
+            colorMap.put('r', "red");
+            colorMap.put('g', "green");
+            colorMap.put('y', "yellow");
+            colorMap.put('m', "magenta");
+            colorMap.put('i', "indigo");
+            colorMap.put('g', "gray");
+            colorMap.put('d', "darkGray");
+            colorMap.put('l', "lightGray");
+            colorMap.put('o', "orange");
+            colorMap.put('c', "cyan");
+            colorMap.put('p', "purple");
+            colorMap.put('v', "violet");
+            colorMap.put('n', "navy");
+            colorMap.put('t', "turquoise");
+            colorMap.put('g', "gold");
+            colorMap.put('s', "silver");
+        }
+        public static String getColor(char character) {
+            return colorMap.get(character);
+        }
+    }
 }
+
+
