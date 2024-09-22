@@ -17,13 +17,15 @@ public class Puzzle
     private char[][] ending;
     private int height;
     private int width;
+    
     /**
      * Constructor for objects of class TiltingTiles
      */
     public Puzzle(int h,int w){
         tablero = new ArrayList<>();
         celdas = new HashMap<>();
-        tiles = new HashMap<>();
+        tiles = new HashMap<>(); //---------------------
+        connections = new HashMap<>();
         height = h;
         width = w;
         this.ending = new char[height][width];
@@ -130,31 +132,80 @@ public class Puzzle
         }
     }
     
-    public void addGlue(int row,int column){
+
+    public void addGlue(int row, int column) {
         ArrayList<Integer> position = new ArrayList<>();
-        position.add(row); 
+        position.add(row);
         position.add(column);
-        if (tiles.get(position)==null){
+        if (tiles.get(position) == null) {
             JOptionPane.showMessageDialog(null, "Error: No hay ninguna baldosa");
-        }else{
-            tiles.get(position).setIsSticky(true);
-            //createConeccions(position);
-            //continuar
+        } else {
+            Tile tile = tiles.get(position);
+            tile.setIsSticky(true);
+            createConnections(position);
         }
     }
+
+
+    public void deleteGlue(int row, int column) {
+        ArrayList<Integer> position = new ArrayList<>();
+        position.add(row);
+        position.add(column);
+        if (tiles.get(position) == null) {
+            JOptionPane.showMessageDialog(null, "Error: No hay ninguna baldosa");
+        } else {
+            Tile tile = tiles.get(position);
+            tile.setIsSticky(false);
+            removeConnections(position);
+        }
+    }
+
+    private void createConnections(ArrayList<Integer> position) {
+        int row = position.get(0);
+        int col = position.get(1);
+        Tile currentTile = tiles.get(position);
+
+        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}}; // Up, Down, Left, Right
+
+        for (int[] dir : directions) {
+            int newRow = row + dir[0];
+            int newCol = col + dir[1];
+            ArrayList<Integer> neighborPosition = new ArrayList<>();
+            neighborPosition.add(newRow);
+            neighborPosition.add(newCol);
+
+            if (isValidPosition(newRow, newCol) && tiles.containsKey(neighborPosition)) {
+                Tile neighborTile = tiles.get(neighborPosition);
+                if (neighborTile.getIsSticky()) {
+                    if (!connections.containsKey(currentTile)) {
+                        connections.put(currentTile, new ArrayList<>());
+                    }
+                    connections.get(currentTile).add(neighborTile);
+
+                    if (!connections.containsKey(neighborTile)) {
+                        connections.put(neighborTile, new ArrayList<>());
+                    }
+                    connections.get(neighborTile).add(currentTile);
+                }
+            }
+        }
+    }
+
+    private void removeConnections(ArrayList<Integer> position) {
+        Tile tile = tiles.get(position);
+        if (connections.containsKey(tile)) {
+            for (Tile connectedTile : connections.get(tile)) {
+                connections.get(connectedTile).remove(tile);
+            }
+            connections.remove(tile);
+        }
+    }
+
+    private boolean isValidPosition(int row, int col) {
+        return row >= 0 && row < height && col >= 0 && col < width;
+    }
+
     
-    public void deleteGlue(int row,int column){
-        ArrayList<Integer> position = new ArrayList<>();
-        position.add(row); 
-        position.add(column);
-        if (tiles.get(position)==null){
-            JOptionPane.showMessageDialog(null, "Error: No hay ninguna baldosa");
-        }else{
-            tiles.get(position).setIsSticky(false);
-            //deleteConeccions(position);
-            //continuar
-        }
-    }
     
     public boolean isGoal() {
         for (int i = 0; i < height; i++) {
@@ -226,6 +277,124 @@ public class Puzzle
             return colorMap.get(character);
         }
     }
+
+    public void tilt(char direction){
+        switch (direction){
+            case 'r':
+                tiltRight();
+                break;
+            case 'l':    
+                tiltLeft();
+                break;
+            case 'u':
+                tiltUp();
+                break;
+            case 'd':
+                tiltDown();
+                break;
+        }
+    }
+    
+    private void tiltRight() {
+        for (int i = 0; i < height; i++) {
+            int lastEmptyColumn = width - 1;
+            for (int j = width - 1; j >= 0; j--) {
+                if (isTileAt(i, j)) {
+                    Tile tile = getTileAt(i, j);
+                    if (j != lastEmptyColumn) {
+                        moveTile(i, j, i, lastEmptyColumn);
+                    }
+                    lastEmptyColumn--;
+                }
+            }
+        }
+    }
+
+    private void tiltLeft() {
+        for (int i = 0; i < height; i++) {
+            int lastEmptyColumn = 0;
+            for (int j = 0; j < width; j++) {
+                if (isTileAt(i, j)) {
+                    Tile tile = getTileAt(i, j);
+                    if (j != lastEmptyColumn) {
+                        moveTile(i, j, i, lastEmptyColumn);
+                    }
+                    lastEmptyColumn++;
+                }
+            }
+        }
+    }
+
+    private void tiltDown() {
+        for (int j = 0; j < width; j++) {
+            int lastEmptyRow = height - 1;
+            for (int i = height - 1; i >= 0; i--) {
+                if (isTileAt(i, j)) {
+                    Tile tile = getTileAt(i, j);
+                    if (i != lastEmptyRow) {
+                        moveTile(i, j, lastEmptyRow, j);
+                    }
+                    lastEmptyRow--;
+                }
+            }
+        }
+    }
+
+    private void tiltUp() {
+        for (int j = 0; j < width; j++) {
+            int lastEmptyRow = 0;
+            for (int i = 0; i < height; i++) {
+                if (isTileAt(i, j)) {
+                    Tile tile = getTileAt(i, j);
+                    if (i != lastEmptyRow) {
+                        moveTile(i, j, lastEmptyRow, j);
+                    }
+                    lastEmptyRow++;
+                }
+            }
+        }
+    }
+
+    private boolean isTileAt(int row, int col) {
+        ArrayList<Integer> position = new ArrayList<>();
+        position.add(row);
+        position.add(col);
+        return tiles.containsKey(position);
+    }
+
+    private Tile getTileAt(int row, int col) {
+        ArrayList<Integer> position = new ArrayList<>();
+        position.add(row);
+        position.add(col);
+        return tiles.get(position);
+    }
+
+    private void moveTile(int fromRow, int fromCol, int toRow, int toCol) {
+        Tile tile = getTileAt(fromRow, fromCol);
+        ArrayList<Integer> oldPosition = new ArrayList<>();
+        oldPosition.add(fromRow);
+        oldPosition.add(fromCol);
+        ArrayList<Integer> newPosition = new ArrayList<>();
+        newPosition.add(toRow);
+        newPosition.add(toCol);
+
+        tiles.remove(oldPosition);
+        tiles.put(newPosition, tile);
+
+        Checkbox oldCell = celdas.get(oldPosition);
+        Checkbox newCell = celdas.get(newPosition);
+
+        oldCell.setIsOccuped(false);
+        newCell.setIsOccuped(true);
+
+        tile.moveTo(newCell.getCenter().getXPosition(), newCell.getCenter().getYPosition());
+    }
+    
+    
+    
+    
+
+    
 }
 
 
