@@ -169,4 +169,46 @@ public class PuzzleTests {
         assertEquals(3, misplacedCount);
     }
 
+    @Test
+    public void testFixedTiles() {
+        // Configuramos un tablero donde sabemos que habrá fichas fijas
+        char[][] starting = {
+                {'r', '.', 'r', '.'},
+                {'.', 'b', '.', 'b'},
+                {'r', '.', 'r', '.'},
+                {'.', 'b', '.', 'b'}
+        };
+        char[][] ending = {
+                {'r', '.', 'r', '.'},
+                {'.', 'b', '.', 'b'},
+                {'r', '.', 'r', '.'},
+                {'.', 'b', '.', 'b'}
+        };
+
+        Puzzle puzzleWithFixed = new Puzzle(starting, ending);
+        int[][] fixedTiles = puzzleWithFixed.fixedTiles();
+
+        // Verificamos que el método retorne algo
+        assertNotNull(fixedTiles);
+
+        // Si hay fichas fijas, verificamos sus posiciones
+        if (fixedTiles.length > 0) {
+            // Verifica que las posiciones de las fichas fijas sean válidas
+            for (int[] position : fixedTiles) {
+                assertTrue(puzzleWithFixed.isValidPosition(position[0], position[1]));
+            }
+
+            // Verifica que las fichas fijas no se muevan después de inclinar
+            char[][] before = puzzleWithFixed.actualArraygement();
+            puzzleWithFixed.tilt('u');
+            puzzleWithFixed.tilt('d');
+            puzzleWithFixed.tilt('l');
+            puzzleWithFixed.tilt('r');
+            char[][] after = puzzleWithFixed.actualArraygement();
+
+            for (int[] position : fixedTiles) {
+                assertEquals(before[position[0]][position[1]], after[position[0]][position[1]]);
+            }
+        }
+    }
 }
