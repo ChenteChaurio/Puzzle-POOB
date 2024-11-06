@@ -1,17 +1,10 @@
 package presentation;
 
-import domain.Checkbox;
-import domain.Glue;
-import domain.Puzzle;
-import domain.Tile;
+import domain.*;
 
 public class Main {
     public static void main(String[] args) {
-        Puzzle puzzle = new Puzzle(2,2);
-        puzzle.addTile(0,0,"red");
-        puzzle.addTile(0,1,"red");
-        puzzle.addTile(1,0,"red");
-        puzzle.addTile(1,1,"red");
-        puzzle.makeVisible();
+        PuzzleContest a = new PuzzleContest();
+        a.simulate(new char[][]{{'.','r','.','.'},{'r','g','y','b'},{'.','b','.','.'},{'.','y','r','.'}},new char[][]{{'y','r','b','r'},{'.','.','y','r'},{'.','.','.','g'},{'.','.','.','b'}});
     }
 }
