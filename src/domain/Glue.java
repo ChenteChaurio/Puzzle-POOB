@@ -5,10 +5,21 @@ import java.util.TreeSet;
 public class Glue {
     private Tile baldoza;
     private Puzzle tablero;
+
+    /**
+     * Constructor for objects of class Glue
+     * @param tile the tile to which glue is to be applied
+     * @param puzzle the main class(has the board)
+     */
     public Glue(Tile tile,Puzzle puzzle){
         baldoza = tile;
         tablero = puzzle;
     }
+
+    /**
+     * Create the connections of the tile
+     * @return conections a TreeSet with the tiles connected with the tile
+     */
     public TreeSet<Tile> createConections(){
         TreeSet<Tile> conections = new TreeSet<>();
         conections.add(baldoza);

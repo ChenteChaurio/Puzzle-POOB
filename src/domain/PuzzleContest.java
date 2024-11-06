@@ -10,9 +10,18 @@ import java.util.*;
 public class PuzzleContest {
     List<String> camino = new LinkedList<>();
 
+    /**
+     * Class to make the solution of the proposed problem
+     */
     public PuzzleContest() {
     }
 
+    /**
+     * Solve the problem
+     * @param starting the initial matrix
+     * @param ending the final matrix
+     * @return boolean
+     */
     public boolean solve(char[][] starting, char[][] ending) {
         Set<String> visitadas = new HashSet<>();
         Queue<char[][]> cola = new LinkedList<>();
@@ -44,10 +53,14 @@ public class PuzzleContest {
                 }
             }
         }
-
         return false;
     }
 
+    /**
+     * Make the simulation of the solution
+     * @param starting the initial matrix
+     * @param ending the final matrix
+     */
     public void simulate(char[][] starting, char[][] ending){
         Puzzle solution = new Puzzle(starting,ending);
         if(solve(starting,ending)){
@@ -59,9 +72,9 @@ public class PuzzleContest {
             for(char a:movimientos){
                 solution.tilt(a);
                 try {
-                    Thread.sleep(1000);  // Pausa la ejecución durante 1000 milisegundos (1 segundo)
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();  // Si se interrumpe el hilo, se captura la excepción
+                    e.printStackTrace();
                 }
             }
         }else{
@@ -69,6 +82,14 @@ public class PuzzleContest {
         }
 
     }
+
+    /**
+     * Auxiliary method to make the way solution
+     * @param matrizInicio the initial matrix
+     * @param matrizFinal the final matrix
+     * @param movimientos the winning movements
+     * @return the way solution
+     */
     private List<String> reconstruirCamino(char[][] matrizInicio, char[][] matrizFinal,
                                            Map<String, String> movimientos,
                                            Map<String, char[][]> origen) {
@@ -82,6 +103,12 @@ public class PuzzleContest {
         return camino;
     }
 
+    /**
+     * The method tilt but in matrix[][]
+     * @param matriz the matrix to be moved
+     * @param direccion the direction to move
+     * @return the matrix after the movement
+     */
     private char[][] tiltMatriz(char[][] matriz, char direccion) {
         int filas = matriz.length;
         int columnas = matriz[0].length;
@@ -141,6 +168,11 @@ public class PuzzleContest {
     }
 
 
+    /**
+     * Create char[][] in a string
+     * @param matriz to make in a string
+     * @return the string
+     */
     private String matrizToString(char[][] matriz) {
         StringBuilder sb = new StringBuilder();
         for (char[] fila : matriz) {

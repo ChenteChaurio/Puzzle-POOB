@@ -3,6 +3,10 @@ package domain;
 import java.util.HashMap;
 
 public class ColorMap{
+    /**
+     * Static map that associates a character with its corresponding color name.
+     * The map is statically initialized with a predefined set of colors.
+     */
     private static HashMap<Character, String> colorMap = new HashMap<>();;
     static {
         colorMap.put('b', "blue");

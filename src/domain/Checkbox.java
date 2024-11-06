@@ -22,6 +22,9 @@ public class Checkbox
 
     /**
      * Constructor for objects of class Checkbox
+     * @param x is the position x in the board
+     * @param y is the position y in the board
+     * @param tablero is the main class
      */
     public Checkbox(int x,int y,Puzzle tablero){
         this.x = x;
@@ -36,6 +39,9 @@ public class Checkbox
         draw();
     }
 
+    /**
+     * Create de visual objet of Checkbox
+     */
     public void draw(){
         this.center = new Rectangle(30,30,"white");
         this.center.moveTo(this.border.getXPosition() + 5, this.border.getYPosition() + 5);
@@ -44,7 +50,10 @@ public class Checkbox
             this.roto.moveTo(this.center.getXPosition() + 7, this.center.getYPosition() + 7);
         }
     }
-    
+
+    /**
+     * Make visible the objet
+     */
     public void makeVisible(){
         border.makeVisible();
         center.makeVisible();
@@ -56,7 +65,10 @@ public class Checkbox
         }
         this.isVisible = true;
     }
-    
+
+    /**
+     * Make invisible the objet
+     */
     public void makeInvisible(){
         border.makeInvisible();
         if(tile != null){
@@ -75,7 +87,11 @@ public class Checkbox
     public int getYPosition(){
         return y;
     }
-    
+
+    /**
+     * Set the boolean in case of the checkbox is occuped;
+     * @param isOccuped determines whether it has a tile or not
+     */
     public void setIsOccuped(boolean isOccuped){
         this.isOccuped = isOccuped;
         if(!isOccuped){
@@ -83,14 +99,22 @@ public class Checkbox
         }
     }
 
+    /**
+     * Add the tile that can be in the checkbox
+     * @param tile the tile that is assigned to the checkbox
+     */
     public void setTile(Tile tile){
         this.tile = tile;
     }
+
 
     public boolean isHasHole(){
         return this.hasHole;
     }
 
+    /**
+     * Set the boolean in case of the checkbox has a Hole;
+     */
     public void setHasHole(){
         this.hasHole=true;
         draw();
@@ -99,7 +123,12 @@ public class Checkbox
     public boolean isOccuped(){
         return this.isOccuped;   
     }
-    
+
+    /**
+     * Move the object visually in the space(not in the board)
+     * @param x the new position in x
+     * @param y the new position in y
+     */
     public void moveTo(int x,int y){
         border.moveTo(x,y);
         draw();

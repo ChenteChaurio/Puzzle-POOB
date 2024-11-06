@@ -1,7 +1,6 @@
 package domain;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.TreeSet;
 
 /**
@@ -23,6 +22,11 @@ public class Tile implements Comparable<Tile>
 
     /**
      * Constructor for objects of class Tile
+     *
+     * @param x the position x in the board
+     * @param y the position y in the board
+     * @param color the color of the tile
+     * @param puzzle the main class(has the board)
      */
     public Tile(int x, int y, String color, Puzzle puzzle){
         this.Posx = x;
@@ -35,6 +39,9 @@ public class Tile implements Comparable<Tile>
         draw();
     }
 
+    /**
+     * Create de visual objet of Checkbox
+     */
     private void draw(){
         pegante = new ArrayList<>();
         int[][] offsets = {
@@ -48,16 +55,25 @@ public class Tile implements Comparable<Tile>
         }
     }
 
-    private void erase(){
+    /**
+     * Erase the visual Glue when the tile move
+     */
+    private void eraseGlue(){
         for(Circle cir :pegante){
             cir.makeInvisible();
         }
     }
 
+    /**
+     * Make visible the objet
+     */
     public void makeVisible(){
         figure.makeVisible();
     }
-    
+
+    /**
+     * Make invisible the objet
+     */
     public void makeInvisible(){
         figure.makeInvisible();
     }
@@ -69,27 +85,47 @@ public class Tile implements Comparable<Tile>
     public int getYPosition(){
         return this.Posy;
     }
-    
+
+    /**
+     * Set the new position in x(in the board)
+     * @param x the new X position
+     */
     public void setXPosition(int x){
         this.Posx = x;
     }
-    
+
+    /**
+     * Set the new position in x(in the board)
+     * @param y the new Y position
+     */
     public void setYPosition(int y){
         this.Posy = y;
     }
-    
+
+
+    /**
+     * Add the Glue in the tile and create the conecctions
+     * @param sticky the type of glue
+     */
     public void addGlue(Glue sticky){
         this.glue = sticky;
         conecciones = sticky.createConections();
         draw();
     }
 
+    /**
+     * Delete the glue in the tile, and reset the list of conecciones
+     */
     public void deleteGlue(){
         this.glue = null;
         conecciones = null;
         draw();
     }
 
+    /**
+     * Add the newConecciones
+     * @param newConecciones TreeSet with the new connections of the Tile
+     */
     public void setConecciones(TreeSet<Tile> newConecciones){
         this.conecciones = newConecciones;
     }
@@ -98,10 +134,13 @@ public class Tile implements Comparable<Tile>
         return conecciones;
     }
 
+    /**
+     * Move the tile to another position, move differently depending on whether it is glued or not
+     * @param dx the new X Position
+     * @param dy the new Y Position
+     */
     public void moveTile(int dx, int dy){
         if(conecciones.isEmpty()){
-            // if(!tablero.isValidPosition(dx,dy)) throw new PuzzleException();
-            // if(tablero.getTablero()[dx][dy].isOccuped()) throw new PuzzleException();
             if(tablero.isValidPosition(dx,dy)&&!tablero.getTablero()[dx][dy].isOccuped()){
                 tablero.getTablero()[getXPosition()][getYPosition()].setIsOccuped(false);
                 setXPosition(dx);
@@ -139,7 +178,13 @@ public class Tile implements Comparable<Tile>
         }
     }
 
-    public boolean isValidMove(int dx, int dy){
+    /**
+     * Check if the new position is valid for move
+     * @param dx the position in X
+     * @param dy the position in Y
+     * @return boolean
+     */
+    private boolean isValidMove(int dx, int dy){
         boolean auxy = true;
         if(tablero.getTablero()[dx][dy].isOccuped()){
             auxy = false;
@@ -168,7 +213,7 @@ public class Tile implements Comparable<Tile>
         figure.changeColor(color);
     }
     public void move(int x,int y){
-        erase();
+        eraseGlue();
         figure.moveTo(x,y);
         draw();
     }

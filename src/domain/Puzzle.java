@@ -20,7 +20,9 @@ public class Puzzle {
 
 
     /**
-     * Constructor for objects of class TiltingTiles
+     * First constructor for objects of class Puzzle
+     * @param h the height of the board
+     * @param w the width of the board
      */
     public Puzzle(int h, int w) {
         tablero = new Checkbox[h][w];
@@ -43,6 +45,11 @@ public class Puzzle {
         }
     }
 
+
+    /**
+     * The second constructor
+     * @param ending the final matrix
+     */
     public Puzzle(char[][] ending) {
         tablero = new Checkbox[ending.length][ending[0].length];
         tableroEnding = new Checkbox[ending.length][ending[0].length];
@@ -65,6 +72,9 @@ public class Puzzle {
 
     }
 
+    /**
+     * Make the visual ending matrix
+     */
     private void createVisualEnding() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -84,6 +94,11 @@ public class Puzzle {
     }
 
 
+    /**
+     * The third constructor
+     * @param starting the initial matrix
+     * @param ending the final matrix
+     */
     public Puzzle(char[][] starting, char[][] ending) {
         tablero = new Checkbox[starting.length][starting[0].length];
         tableroEnding = new Checkbox[starting.length][starting[0].length];
@@ -109,24 +124,42 @@ public class Puzzle {
         createVisualEnding();
     }
 
+    /**
+     * Allows to add a tile to the board
+     * @param row the row in the board
+     * @param column the column in the board
+     * @param color the color of the tile
+     */
     public void addTile(int row, int column, String color) {
-        Tile baldosa = new Tile(row, column, color, this);
-        Checkbox celd = this.tablero[row][column];
-        celd.setIsOccuped(true);
-        celd.setTile(baldosa);
-        baldosa.move(celd.getCenter().getXPosition(), celd.getCenter().getYPosition());
-        if (tablero[0][0].isVisible()) {
-            baldosa.makeVisible();
+        if(!isTileAt(row,column)){
+            Tile baldosa = new Tile(row, column, color, this);
+            Checkbox celd = this.tablero[row][column];
+            celd.setIsOccuped(true);
+            celd.setTile(baldosa);
+            baldosa.move(celd.getCenter().getXPosition(), celd.getCenter().getYPosition());
+            if (tablero[0][0].isVisible()) {
+                baldosa.makeVisible();
+            }
+            tiles.add(baldosa);
         }
-        tiles.add(baldosa);
     }
 
+    /**
+     * Allows to delete a tile to the board
+     * @param row the row in the board
+     * @param column the column in the board
+     */
     public void deleteTile(int row, int column) {
         tablero[row][column].getTile().makeInvisible();
         tiles.remove(tablero[row][column].getTile());
         tablero[row][column].setIsOccuped(false);
     }
 
+    /**
+     * Relocate a tile in other position
+     * @param from int[] with the position of the tile to be moved
+     * @param to
+     */
     public void relocateTile(int[] from, int[] to) {
         if (!isTileAt(from[0], from[1])) {
             JOptionPane.showMessageDialog(null, "Error: No hay ninguna baldosa");
@@ -140,6 +173,11 @@ public class Puzzle {
     }
 
 
+    /**
+     * Add glue in a tile
+     * @param row the row in the board
+     * @param column the column in the board
+     */
     public void addGlue(int row, int column) {
         if (!tablero[row][column].isOccuped()) {
             JOptionPane.showMessageDialog(null, "Error: No hay ninguna baldosa");
@@ -149,6 +187,10 @@ public class Puzzle {
         }
     }
 
+    /**
+     * Make the all connections of the tiles is glued
+     * @param stickys the connections of the tile glue
+     */
     private void createGlueds(TreeSet<Tile> stickys) {
         boolean mezclado = false;
         for (Set<Tile> glued : glueds) {
@@ -166,6 +208,9 @@ public class Puzzle {
         setTileGlueds();
     }
 
+    /**
+     * Set all tiles glueds with her connections
+     */
     private void setTileGlueds() {
         for (TreeSet<Tile> glued : glueds) {
             for (Tile tile : glued) {
@@ -174,6 +219,11 @@ public class Puzzle {
         }
     }
 
+    /**
+     * Delete glue in a tile
+     * @param row the row in the board
+     * @param column the column in the board
+     */
     public void deleteGlue(int row, int column) {
         if (!tablero[row][column].isOccuped()) {
             JOptionPane.showMessageDialog(null, "Error: No hay ninguna baldosa");
@@ -182,12 +232,20 @@ public class Puzzle {
         }
     }
 
-
+    /**
+     * Check if the position is valid on the board
+     * @param row the row of the board
+     * @param col the column of the board
+     * @return
+     */
     public boolean isValidPosition(int row, int col) {
         return row >= 0 && row < height && col >= 0 && col < width;
     }
 
-
+    /**
+     * Check if the actual matrix is equals to ending
+     * @return boolean
+     */
     public boolean isGoal() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -199,6 +257,10 @@ public class Puzzle {
         return true;
     }
 
+    /**
+     * Make the Arraygement of the Puzzle
+     * @return char[][]
+     */
     public char[][] actualArraygement() {
         char[][] actualArray = new char[height][width];
         for (int i = 0; i < height; i++) {
@@ -213,6 +275,9 @@ public class Puzzle {
         return actualArray;
     }
 
+    /**
+     * Make visible all objets of puzzle
+     */
     public void makeVisible() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -225,6 +290,9 @@ public class Puzzle {
         }
     }
 
+    /**
+     * Make invisible all objets of puzzle
+     */
     public void makeInvisible() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -237,6 +305,10 @@ public class Puzzle {
         }
     }
 
+    /**
+     * Move all tiles in the specific direction
+     * @param direction char with the direction
+     */
     public void tilt(char direction) {
         switch (direction) {
             case 'r':
@@ -254,10 +326,16 @@ public class Puzzle {
         }
     }
 
+    /**
+     * Finish the program
+     */
     private void finish() {
         System.exit(0);
     }
 
+    /**
+     * Move all tiles in the up direction
+     */
     private void tiltUp() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -302,6 +380,9 @@ public class Puzzle {
         }
     }
 
+    /**
+     * change the actual matrix with the ending matrix
+     */
     public void exchange(){
         makeInvisible();
         tiles.clear();
@@ -331,6 +412,10 @@ public class Puzzle {
         makeVisible();
     }
 
+    /**
+     * Makes visible the chips that will not move in case of any tilting
+     * @return int[][] with the positions of the tiles
+     */
     public int[][] fixedTiles() {
         HashSet<String> fixedTilePositionsSet = new HashSet<>();
         char[] tilts = {'u', 'd', 'l', 'r'};
@@ -367,10 +452,15 @@ public class Puzzle {
         return fixedTilePositions;
     }
 
+
     public ArrayList<Tile> getTiles(){
         return tiles;
     }
 
+    /**
+     * Displays the number of tiles remaining to be set
+     * @return count with the number
+     */
     public int misplacedTiles(){
         int count = getTiles().size();
         for (int i = 0; i < height; i++) {
@@ -385,6 +475,9 @@ public class Puzzle {
         return count;
     }
 
+    /**
+     * Move all tiles in the down direction
+     */
     private void tiltDown() {
         for (int i = height - 1; i >= 0; i--) {
             for (int j = width - 1; j >= 0; j--) {
@@ -429,6 +522,9 @@ public class Puzzle {
         }
     }
 
+    /**
+     * Move all tiles in the right direction
+     */
     private void tiltRight() {
         for (int j = width - 1; j >= 0; j--) {
             for (int i = 0; i < height; i++) {
@@ -479,6 +575,9 @@ public class Puzzle {
         }
     }
 
+    /**
+     * Move all tiles in the left direction
+     */
     private void tiltLeft() {
         for (int j = 0; j < width; j++) {
             for (int i = 0; i < height; i++) {
@@ -529,6 +628,12 @@ public class Puzzle {
         }
     }
 
+    /**
+     * Auxiliary method to create a path forward
+     * @param direction the direction to where I want the path
+     * @param position the position from which the path starts
+     * @return path
+     */
     private ArrayList<Checkbox> path(char direction, int[] position) {
         ArrayList<Checkbox> path = new ArrayList<>();
         if (direction == 'u') {
@@ -551,12 +656,20 @@ public class Puzzle {
         return path;
     }
 
+    /**
+     * Make a hole in the board
+     * @param row the row in the board
+     * @param column the column in the board
+     */
     public void makeHole(int row, int column) {
-        if(!isTileAt(row, column)){
+        if(!isTileAt(row, column)&&isValidPosition(row, column)){
             tablero[row][column].setHasHole();
         }
     }
 
+    /**
+     * Make a aleatory tilt
+     */
     public void tilt(){
         char[] direcciones = {'u', 'd', 'l', 'r'};
         Random random = new Random();
@@ -565,11 +678,22 @@ public class Puzzle {
     }
 
 
-
+    /**
+     * Check if the checkbox in this position has a tile
+     * @param row the row of the board
+     * @param col the column of the board
+     * @return boolean
+     */
     private boolean isTileAt(int row, int col) {
         return tablero[row][col].isOccuped();
     }
 
+    /**
+     * Get the Tile in this position
+     * @param row the row of the board
+     * @param col the column of the board
+     * @return Tile
+     */
     private Tile getTileAt(int row, int col) {
         return tablero[row][col].getTile();
     }
